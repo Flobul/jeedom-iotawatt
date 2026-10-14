@@ -23,61 +23,70 @@
        die();
    }
    $plugin = plugin::byId('iotawatt');
+   $update = $plugin->getUpdate();
+   $deviceCount = count(iotawatt::byType('iotawatt'));
+   $cronRefresh = (string) config::byKey('autorefresh', 'iotawatt', 'never');
+   $daemonRefresh = (string) config::byKey('deamonRefresh', 'iotawatt', '');
+   $chartPeriod = (int) config::byKey('chartDefaultPeriod', 'iotawatt', 7);
    sendVarToJS('version', iotawatt::$_pluginVersion);
    ?>
    <style>
-       .icon-iotawatt {
-           font-size: 1.3em;
-           color: #94CA02;
-       }
-
-       :root {
-           --background-color: #1987ea;
-       }
-
        #infoCmdLinky {
            margin-left: 5px;
        }
    </style>
+<?php include_file('desktop', 'plugin-banner', 'css', 'iotawatt'); ?>
+
 <form class="form-horizontal formIotawatt" id="configuration_plugin_iotawatt">
    <fieldset>
-      <legend>
-         <i class="fa fa-list-alt"></i> {{Général}}
-      </legend>
-      <div class="form-group">
-         <?php
-            $update = $plugin->getUpdate();
-            if (is_object($update)) {
-                echo '<div class="col-lg-3">';
-                echo '<div>';
-                echo '<label>{{Branche}} :</label> '. $update->getConfiguration('version', 'stable');
-                echo '</div>';
-                echo '<div>';
-                echo '<label>{{Source}} :</label> ' . $update->getSource();
-                echo '</div>';
-                echo '<div>';
-                echo '<label>{{Version}} :</label> v' . ((iotawatt::$_pluginVersion)?iotawatt::$_pluginVersion:' '). ' (' . $update->getLocalVersion() . ')';
-                echo '</div>';
-                echo '</div>';
-            }
-            ?>
-         <div class="col-lg-5">
-            <div>
-               <i><a class="btn btn-primary btn-xs" target="_blank" href="https://flobul-domotique.fr/presentation-du-plugin-iotawatt-pour-jeedom/"><i class="fas fa-book"></i><strong> {{Présentation du plugin}}</strong></a></i>
-               <i><a class="btn btn-success btn-xs" target="_blank" href="<?=$plugin->getDocumentation()?>"><i class="fas fa-book"></i><strong> {{Documentation complète du plugin}}</strong></a></i>
-            </div>
-            <div>
-               <i> {{Les dernières actualités du plugin}} <a class="btn btn-label btn-xs" target="_blank" href="https://community.jeedom.com/t/plugin-iotawatt-documentation-et-actualites/39994"><i class="icon jeedomapp-home-jeedom icon-iotawatt"></i><strong>{{sur le community}}</strong></a>.</i>
-            </div>
-            <div>
-               <i> {{Les dernières discussions autour du plugin}} <a class="btn btn-label btn-xs" target="_blank" href="https://community.jeedom.com/tags/plugin-iotawatt"><i class="icon jeedomapp-home-jeedom icon-iotawatt"></i><strong>{{sur le community}}</strong></a>.</i></br>
-               <i> {{Pensez à mettre le tag}} <b><font font-weight="bold" size="+1">#plugin-iotawatt</font></b> {{et à fournir les log dans les balises préformatées}}.</i>
-            </div>
-         </div>
-      </div>
-        <legend>
-		<i class="fas fa-cogs"></i> {{Paramètres}}
-		</legend>
+        <div class="iotawatt-config-page">
+            <section class="iotawatt-config-hero">
+                <div class="iotawatt-config-identity">
+                    <div class="iotawatt-config-logo"><img src="plugins/iotawatt/plugin_info/iotawatt_icon.png" alt="IoTaWatt"></div>
+                    <div>
+                        <span class="iotawatt-config-eyebrow">{{Configuration du plugin}}</span>
+                        <h2>IoTaWatt</h2>
+                        <p>{{Connectez vos boîtiers IoTaWatt à Jeedom et suivez vos mesures d’énergie sur le réseau local.}}</p>
+                    </div>
+                </div>
+                <div class="iotawatt-config-meta">
+                    <span><i class="fas fa-code-branch"></i> {{Version}} <strong>v<?=htmlspecialchars(iotawatt::$_pluginVersion, ENT_QUOTES, 'UTF-8')?></strong></span>
+                    <?php if (is_object($update)) { ?>
+                        <span><i class="fas fa-calendar-alt"></i> <?=htmlspecialchars((string) $update->getLocalVersion(), ENT_QUOTES, 'UTF-8')?></span>
+                        <span><i class="fas fa-stream"></i> <?=htmlspecialchars((string) $update->getConfiguration('version', 'stable'), ENT_QUOTES, 'UTF-8')?></span>
+                        <span><i class="fas fa-cloud-download-alt"></i> <?=htmlspecialchars((string) $update->getSource(), ENT_QUOTES, 'UTF-8')?></span>
+                    <?php } ?>
+                </div>
+                <div class="iotawatt-config-links">
+                    <a class="btn btn-sm iotawatt-config-link-documentation" target="_blank" rel="noopener noreferrer" href="<?=htmlspecialchars((string) $plugin->getDocumentation(), ENT_QUOTES, 'UTF-8')?>"><i class="fas fa-book"></i> {{Documentation}}</a>
+                    <a class="btn btn-sm iotawatt-config-link-changelog" target="_blank" rel="noopener noreferrer" href="<?=htmlspecialchars((string) $plugin->getChangelog(), ENT_QUOTES, 'UTF-8')?>"><i class="fas fa-list"></i> {{Changelog}}</a>
+                    <a class="btn btn-sm iotawatt-config-link-community" target="_blank" rel="noopener noreferrer" href="https://community.jeedom.com/tag/plugin-iotawatt"><i class="fas fa-comments"></i> {{Communauté}}</a>
+                </div>
+            </section>
+
+            <section class="iotawatt-config-summary" aria-label="{{Résumé de la configuration IoTaWatt}}">
+                <article class="iotawatt-config-summary-card">
+                    <span class="iotawatt-config-summary-icon"><i class="fas fa-bolt"></i></span>
+                    <div><span class="iotawatt-config-summary-label">{{Appareils}}</span><strong><?= (int) $deviceCount ?></strong><small>{{configuré(s) dans Jeedom}}</small></div>
+                </article>
+                <article class="iotawatt-config-summary-card">
+                    <span class="iotawatt-config-summary-icon"><i class="fas fa-clock"></i></span>
+                    <div><span class="iotawatt-config-summary-label">{{Rafraîchissement cron}}</span><strong><?= htmlspecialchars($cronRefresh, ENT_QUOTES, 'UTF-8') ?></strong><small>{{planification enregistrée}}</small></div>
+                </article>
+                <article class="iotawatt-config-summary-card">
+                    <span class="iotawatt-config-summary-icon"><i class="fas fa-tachometer-alt"></i></span>
+                    <div><span class="iotawatt-config-summary-label">{{Rafraîchissement démon}}</span><strong><?= $daemonRefresh !== '' ? htmlspecialchars($daemonRefresh . ' s', ENT_QUOTES, 'UTF-8') : __('Désactivé', __FILE__) ?></strong><small>{{puissance et tension}}</small></div>
+                </article>
+                <article class="iotawatt-config-summary-card">
+                    <span class="iotawatt-config-summary-icon"><i class="fas fa-chart-line"></i></span>
+                    <div><span class="iotawatt-config-summary-label">{{Période graphique}}</span><strong><?= (int) $chartPeriod ?> {{jours}}</strong><small>{{valeur par défaut}}</small></div>
+                </article>
+            </section>
+
+            <div class="iotawatt-config-grid">
+                <section class="iotawatt-config-card iotawatt-config-card-wide">
+                    <header><span class="iotawatt-config-card-icon"><i class="fas fa-cogs"></i></span><div><h3>{{Paramètres}}</h3></div></header>
+                    <div class="iotawatt-config-card-body">
           <div class="form-group">
               <label class="col-lg-4 control-label">{{Intervalle de rafraîchissement de toutes les informations (cron)}}
       <sup><i class="fas fa-question-circle" title="{{Sélectionnez l'intervalle auquel le plugin ira récupérer les informations de iotawatt.}}</br>{{En fonction des commandes infos de l'équipement, les valeurs des unités Volts, Watts, Wh, Amps, VA, Hz, PF, VAR, VARh seront mises à jour.}}"></i></sup>
@@ -150,7 +159,7 @@
               <div class="col-lg-4 input-group">
                   <input class="configKey form-control input-sm" data-l1key="powerLinky" />
                   <span class="input-group-btn">
-                      <a class="btn btn-default btn-sm btn-success cmdPowerLinky"><i class="fa fa-list-alt"></i></a>
+                      <a class="btn btn-default btn-sm btn-success cmdPowerLinky"><i class="fas fa-list-alt"></i></a>
                   </span>
                   <span id="infoCmdPowerLinky">
                   </span>
@@ -166,16 +175,17 @@
               <div class="col-lg-4 input-group">
                   <input class="configKey form-control input-sm" data-l1key="linky" />
                   <span class="input-group-btn">
-                      <a class="btn btn-default btn-sm btn-success cmdLinky"><i class="fa fa-list-alt"></i></a>
+                      <a class="btn btn-default btn-sm btn-success cmdLinky"><i class="fas fa-list-alt"></i></a>
                   </span>
                   <span id="infoCmdLinky">
                   </span>
               </div>
           </div>
-      </div>
-   </fieldset>
-   <fieldset>
-      <legend><i class="fas fa-chart-line"></i> {{Paramètres par défaut du graphique}}</legend>
+                    </div>
+                </section>
+                <section class="iotawatt-config-card iotawatt-config-card-wide">
+                    <header><span class="iotawatt-config-card-icon"><i class="fas fa-chart-line"></i></span><div><h3>{{Paramètres par défaut du graphique}}</h3></div></header>
+                    <div class="iotawatt-config-card-body">
       <div class="form-group">
          <label class="col-lg-4 control-label">{{Période par défaut (jours)}}
             <sup>
@@ -523,6 +533,10 @@
             </div>
          </div>
       </div>
+                    </div>
+                </section>
+            </div>
+        </div>
    </fieldset>
 </form>
 <?php include_file('desktop', 'configuration', 'js', 'iotawatt'); ?>

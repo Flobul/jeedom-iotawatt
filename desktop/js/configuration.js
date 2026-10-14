@@ -293,7 +293,7 @@ if (document.readyState === "loading") {
 } else {
     setTimeout(function() {
         printPluginConfiguration();
-    }, 100);
+    }, 200);
 }
 
 function printPluginConfiguration() {

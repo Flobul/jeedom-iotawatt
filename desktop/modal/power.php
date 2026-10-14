@@ -16,7 +16,7 @@
  */
 
 if (!isConnect('admin')) {
-    throw new Exception('401 Unauthorized');
+    throw new Exception(__('401 - Accès non autorisé', __FILE__));
 }
 
 require_once __DIR__ . '/../../core/class/iotawatt.power.class.php';

@@ -17,14 +17,14 @@
 
 
 if (!isConnect('admin')) {
-    throw new Exception('{{401 - Accès non autorisé}}');
+    throw new Exception(__('401 - Accès non autorisé', __FILE__));
 }
 if (init('eqLogic_id') == '') {
-    throw new Exception('{{L\'id de l\'équipement ne peut être vide : }}' . init('eqLogic_id'));
+    throw new Exception(__('L\'id de l\'équipement ne peut être vide', __FILE__) . ' : ' . init('eqLogic_id'));
 }
 $eqLogic = eqLogic::byId(init('eqLogic_id'));
 if (!is_object($eqLogic)) {
-    throw new Exception('{{Aucun équipement associé à l\'id : }}' . init('eqLogic_id'));
+    throw new Exception(__('Aucun équipement associé à l\'id', __FILE__) . ' : ' . init('eqLogic_id'));
 }
 
 $series = $eqLogic->getSeries();

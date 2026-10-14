@@ -16,7 +16,7 @@
  */
 
 if (!isConnect('admin')) {
-    throw new Exception('401 Unauthorized');
+    throw new Exception(__('401 - Accès non autorisé', __FILE__));
 }
 
 require_once __DIR__ . '/../../core/class/iotawatt.power.class.php';
@@ -826,12 +826,12 @@ function getTempoDayColor($date) {
 
         $response = file_get_contents($apiUrl, false, $context);
         if ($response === false) {
-            throw new Exception('API Tempo indisponible');
+            throw new Exception(__('API Tempo indisponible', __FILE__));
         }
 
         $data = json_decode($response, true);
         if (!$data || !is_array($data)) {
-            throw new Exception('Données Tempo invalides');
+            throw new Exception(__('Données Tempo invalides', __FILE__));
         }
 
         // Convertir la date en format YYYY-MM-DD
@@ -857,7 +857,7 @@ function getTempoDayColor($date) {
         }
         
         // Si toujours pas trouvé, utiliser bleu par défaut
-        throw new Exception('Date non trouvée');
+        throw new Exception(__('Date non trouvée', __FILE__));
 
     } catch (Exception $e) {
         // Fallback vers simulation simplifiée
@@ -1112,7 +1112,7 @@ foreach ($cmdArray as $key => $equipment) {
     $color = generateColor($datasetIndex);
 
     // Nom de l'entrée
-    $name = $equipment['consoName'] ?? $equipment['eqName'] ?? 'Entrée ' . $datasetIndex;
+    $name = $equipment['consoName'] ?? $equipment['eqName'] ?? __('Entrée', __FILE__) . ' ' . $datasetIndex;
     $name = strip_tags($name);
     $name = str_replace(['Consommation', 'Puissance'], '', $name);
     $name = trim($name);
@@ -1248,7 +1248,7 @@ if ($aggregationMode === 'daily') {
     foreach ($cmdArray as $key => $equipment) {
         if (empty($equipment['consoId'])) continue;
         
-        $equipName = $equipment['consoName'] ?? $equipment['eqName'] ?? 'Entrée ' . $key;
+        $equipName = $equipment['consoName'] ?? $equipment['eqName'] ?? __('Entrée', __FILE__) . ' ' . $key;
         $equipName = strip_tags($equipName);
         $equipName = str_replace(['Consommation', 'Puissance'], '', $equipName);
         $equipName = trim($equipName);
@@ -1442,7 +1442,7 @@ if ($aggregationMode === 'daily') {
     foreach ($cmdArray as $key => $equipment) {
         if (empty($equipment['consoId'])) continue;
         
-        $equipName = $equipment['consoName'] ?? $equipment['eqName'] ?? 'Entrée ' . $key;
+        $equipName = $equipment['consoName'] ?? $equipment['eqName'] ?? __('Entrée', __FILE__) . ' ' . $key;
         $equipName = strip_tags($equipName);
         $equipName = str_replace(['Consommation', 'Puissance'], '', $equipName);
         $equipName = trim($equipName);

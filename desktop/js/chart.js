@@ -74,10 +74,10 @@
     function getPeriodDescription(label, mode) {
         if (mode === 'monthly') {
             var parts = label.split('/');
-            var months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+            var months = ['{{Jan}}', '{{Fév}}', '{{Mar}}', '{{Avr}}', '{{Mai}}', '{{Juin}}', '{{Juil}}', '{{Août}}', '{{Sep}}', '{{Oct}}', '{{Nov}}', '{{Déc}}'];
             return months[parseInt(parts[0]) - 1] + ' ' + parts[1];
         } else if (mode === 'yearly') {
-            return 'Année ' + label;
+            return '{{Année}} ' + label;
         } else {
             return label;
         }
@@ -189,7 +189,7 @@
     function generateDetailedTooltip(label, totalKwh, totalCost, dayData) {
         var tooltipLines = [];
         tooltipLines.push('<strong>' + label + '</strong>');
-        tooltipLines.push('Total: ' + totalKwh.toFixed(2) + ' kWh (' + totalCost.toFixed(2) + ' €)');
+        tooltipLines.push('{{Total}} : ' + totalKwh.toFixed(2) + ' kWh (' + totalCost.toFixed(2) + ' €)');
         
         // Ajouter les détails énergie vs frais fixes si disponibles
         if (dayData) {
@@ -248,10 +248,10 @@
                 var totalHCCost = parseFloat(dayData.cost_hc_ttc) || 0;
                 var totalHPCost = parseFloat(dayData.cost_hp_ttc) || 0;
                 if (totalHC > 0) {
-                    tooltipLines.push('Total HC: ' + totalHCCost.toFixed(2) + ' €');
+                    tooltipLines.push('{{Total HC}} : ' + totalHCCost.toFixed(2) + ' €');
                 }
                 if (totalHP > 0) {
-                    tooltipLines.push('Total HP: ' + totalHPCost.toFixed(2) + ' €');
+                    tooltipLines.push('{{Total HP}} : ' + totalHPCost.toFixed(2) + ' €');
                 }
             } else if (tariffType === 'tempo' || tariffType === 'hphc') {
                 // Afficher simple HC/HP (jour unicolore ou HP/HC)
@@ -285,10 +285,10 @@
                 
                 // Ajouter les totaux de coût HC/HP
                 if (totalHC > 0) {
-                    tooltipLines.push('Total HC: ' + totalHCCost.toFixed(2) + ' €');
+                    tooltipLines.push('{{Total HC}} : ' + totalHCCost.toFixed(2) + ' €');
                 }
                 if (totalHP > 0) {
-                    tooltipLines.push('Total HP: ' + totalHPCost.toFixed(2) + ' €');
+                    tooltipLines.push('{{Total HP}} : ' + totalHPCost.toFixed(2) + ' €');
                 }
             }
         }
@@ -555,7 +555,7 @@
                     
                     // Créer le tooltip détaillé avec couleurs Tempo
                     var tooltipLines = ['<strong>' + dataset.label + '</strong>'];
-                    tooltipLines.push('Total: ' + (Math.round(value * 100) / 100) + ' kWh (' + costData.total.toFixed(2) + ' € TTC)');
+                    tooltipLines.push('{{Total}} : ' + (Math.round(value * 100) / 100) + ' kWh (' + costData.total.toFixed(2) + ' € TTC)');
                     
                     // Détails HC/HP uniquement en mode daily
                     if (aggregationMode === 'daily') {
@@ -714,7 +714,7 @@
             var dayTooltipLines = [];
             var periodLabel = getPeriodDescription(label, aggregationMode);
             dayTooltipLines.push('<strong>' + periodLabel + '</strong>');
-            dayTooltipLines.push('Total: ' + dayTotalFormatted + ' (' + dayCostFormatted + ')');
+            dayTooltipLines.push('{{Total}} : ' + dayTotalFormatted + ' (' + dayCostFormatted + ')');
             
             // Calculer et afficher les frais fixes (abonnement + CTA + TVA sur ces frais)
             if (dayData) {
@@ -761,10 +761,10 @@
                 var hpCostTTC = parseFloat(dayData.cost_hp_ttc || 0);
                 
                 if (totalHC > 0) {
-                    dayTooltipLines.push('Total HC: ' + hcCostTTC.toFixed(2) + ' €');
+                    dayTooltipLines.push('{{Total HC}} : ' + hcCostTTC.toFixed(2) + ' €');
                 }
                 if (totalHP > 0) {
-                    dayTooltipLines.push('Total HP: ' + hpCostTTC.toFixed(2) + ' €');
+                    dayTooltipLines.push('{{Total HP}} : ' + hpCostTTC.toFixed(2) + ' €');
                 }
             } else if (dayData && (totalHC > 0 || totalHP > 0)) {
                 // Pas de périodes : affichage simple (daily avec HC/HP ou monthly/yearly)
@@ -904,7 +904,7 @@
             // Construire le tooltip détaillé comme pour les barres empilées
             var tooltipLines = [];
             tooltipLines.push('<strong>' + equipment.label + '</strong>');
-            tooltipLines.push('Total: ' + equipment.totalKwh.toFixed(2) + ' kWh (' + equipment.totalCost.toFixed(2) + ' € TTC)');
+            tooltipLines.push('{{Total}} : ' + equipment.totalKwh.toFixed(2) + ' kWh (' + equipment.totalCost.toFixed(2) + ' € TTC)');
             tooltipLines.push('------------------');
             
             // Afficher les détails HC/HP
@@ -997,7 +997,7 @@
             });
         }
         
-        var totalTooltip = generateDetailedTooltip('Total période', grandTotalKwh, grandTotalCost, periodData);
+        var totalTooltip = generateDetailedTooltip('{{Total période}}', grandTotalKwh, grandTotalCost, periodData);
         
         return '<div class="chart-pie">' +
                '<div class="pie-chart-wrapper">' +
@@ -1085,7 +1085,7 @@
                     
                     // Créer le tooltip détaillé comme pour les barres empilées
                     var tooltipLines = ['<strong>' + equipment.label + '</strong>'];
-                    tooltipLines.push('Total: ' + (Math.round(equipment.value * 100) / 100) + ' kWh (' + equipment.cost.toFixed(2) + ' € TTC)');
+                    tooltipLines.push('{{Total}} : ' + (Math.round(equipment.value * 100) / 100) + ' kWh (' + equipment.cost.toFixed(2) + ' € TTC)');
                     tooltipLines.push('------------------');
                     
                     var tariffType = window.tariffType || 'base';
@@ -1285,7 +1285,7 @@
                 
                 // Créer un tooltip détaillé pour cette barre individuelle
                 var tooltipLines = ['<strong>' + dataset.label + '</strong>'];
-                tooltipLines.push('Total: ' + value.toFixed(2) + ' kWh (' + cost.toFixed(2) + ' €)');
+                tooltipLines.push('{{Total}} : ' + value.toFixed(2) + ' kWh (' + cost.toFixed(2) + ' €)');
                 
                 // Détails HC/HP uniquement en mode daily
                 if (aggregationMode === 'daily') {
@@ -1397,9 +1397,9 @@
             });
         }
         
-        var totalTooltip = generateDetailedTooltip('Total période', grandTotalKwh, grandTotalCost, periodData);
+        var totalTooltip = generateDetailedTooltip('{{Total période}}', grandTotalKwh, grandTotalCost, periodData);
         
-        var periodLabel = aggregationMode === 'monthly' ? 'Total mois' : (aggregationMode === 'yearly' ? 'Total années' : 'Période totale');
+        var periodLabel = aggregationMode === 'monthly' ? '{{Total mois}}' : (aggregationMode === 'yearly' ? '{{Total années}}' : '{{Période totale}}');
         
         var html = '<div class="chart-bars"><div class="chart-bar">';
         html += '<div class="chart-bar-total" data-tooltip="' + totalTooltip + '">' + (showCost ? grandTotalCost.toFixed(2) + ' €' : grandTotalKwh.toFixed(2) + ' kWh') + '</div>';
@@ -1474,7 +1474,7 @@
         });
         
         html += '</div>';
-        html += '<div class="grouped-label">Période totale</div>';
+        html += '<div class="grouped-label">{{Période totale}}</div>';
         html += '</div></div>';
         
         // Ajouter le label total en haut avec toggle kWh/€
@@ -1517,9 +1517,9 @@
             });
         }
         
-        var totalTooltip = generateDetailedTooltip('Total période', grandTotalKwh, grandTotalCost, periodData);
+        var totalTooltip = generateDetailedTooltip('{{Total période}}', grandTotalKwh, grandTotalCost, periodData);
         
-        var periodLabel = aggregationMode === 'monthly' ? 'Total mois' : (aggregationMode === 'yearly' ? 'Total années' : 'Total période');
+        var periodLabel = aggregationMode === 'monthly' ? '{{Total mois}}' : (aggregationMode === 'yearly' ? '{{Total années}}' : '{{Total période}}');
         
         var totalLabel = '<div class="grouped-total-label-container">' +
                         '<div class="grouped-kwh" data-tooltip="' + totalTooltip + '">' + grandTotalKwh.toFixed(2) + ' kWh</div>' +
@@ -1599,7 +1599,7 @@
             });
         }
         
-        var totalTooltip = generateDetailedTooltip('Total période', grandTotalKwh, grandTotalCost, periodData);
+        var totalTooltip = generateDetailedTooltip('{{Total période}}', grandTotalKwh, grandTotalCost, periodData);
         
         // Déterminer si on affiche en € ou en kWh
         var toggleBtn = document.getElementById('toggleValueType');
@@ -1637,7 +1637,7 @@
                 var cost = equipmentCost ? equipmentCost.total : 0;
                 
                 var tooltipLines = ['<strong>' + dataset.label + '</strong>'];
-                tooltipLines.push('Total: ' + totalKwh.toFixed(2) + ' kWh (' + cost.toFixed(2) + ' € TTC)');
+                tooltipLines.push('{{Total}} : ' + totalKwh.toFixed(2) + ' kWh (' + cost.toFixed(2) + ' € TTC)');
                 tooltipLines.push('------------------');
                 
                 // Ajouter les détails HC/HP/Tempo si disponibles
@@ -1809,7 +1809,7 @@
             });
         }
         
-        var totalTooltip = generateDetailedTooltip('Total période', grandTotalKwh, grandTotalCost, periodData);
+        var totalTooltip = generateDetailedTooltip('{{Total période}}', grandTotalKwh, grandTotalCost, periodData);
         
         // Déterminer si on affiche en € ou en kWh
         var toggleBtn = document.getElementById('toggleValueType');
@@ -1853,7 +1853,7 @@
                 var cost = equipmentCost ? equipmentCost.total : 0;
                 
                 var tooltipLines = ['<strong>' + dataset.label + '</strong>'];
-                tooltipLines.push('Total: ' + totalKwh.toFixed(2) + ' kWh (' + cost.toFixed(2) + ' € TTC)');
+                tooltipLines.push('{{Total}} : ' + totalKwh.toFixed(2) + ' kWh (' + cost.toFixed(2) + ' € TTC)');
                 tooltipLines.push('------------------');
                 
                 // Ajouter les détails HC/HP/Tempo si disponibles

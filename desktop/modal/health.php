@@ -16,16 +16,25 @@
  */
 
 if (!isConnect('admin')) {
-    throw new Exception('401 Unauthorized');
+    throw new Exception(__('401 - Accès non autorisé', __FILE__));
 }
 $eqLogics = iotawatt::byType('iotawatt');
 ?>
-<style>
-    .scanHender{
-        cursor: pointer !important;
-        width: 100%;
-    }
-</style>
+<?php include_file('desktop', 'plugin-banner', 'css', 'iotawatt'); ?>
+<?php include_file('desktop', 'health', 'css', 'iotawatt'); ?>
+
+<div id="iotawattHealth">
+    <header id="iotawatt-health-banner" class="iotawatt-health-hero">
+        <div class="iotawatt-health-hero-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="iotawatt-health-hero-copy">
+            <span class="iotawatt-health-eyebrow">{{Diagnostic du plugin}}</span>
+            <h2>{{Santé IoTaWatt}}</h2>
+            <p>{{État des boîtiers IoTaWatt et dernières communications sur le réseau local.}}</p>
+        </div>
+        <button type="button" class="btn iotawatt-health-refresh" id="bt_refreshHealth_iotawatt"><i class="fas fa-sync-alt"></i> {{Rafraîchir}}</button>
+    </header>
+
+
 
 <table class="table table-condensed tablesorter" id="table_healthiotawatt">
 	<thead>
@@ -70,3 +79,5 @@ $eqLogics = iotawatt::byType('iotawatt');
       ?>
 	</tbody>
 </table>
+</div>
+<?php include_file('desktop', 'health', 'js', 'iotawatt'); ?>

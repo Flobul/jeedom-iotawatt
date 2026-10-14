@@ -1,0 +1,16 @@
+/**
+ * CSS du plugin iotawatt Sante (modal).
+ *
+ * Reference : localhomeconnect desktop/css/health.css
+ * https://github.com/DomoFlo1/jeedom-localhomeconnect
+ *
+ * Styles extraits du modal health.php.
+ */
+.scanHender {
+    cursor: pointer !important;
+    width: 100%;
+}
+
+#iotawattHealth {
+    margin: 0 auto;
+}

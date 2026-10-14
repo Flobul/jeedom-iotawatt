@@ -476,9 +476,9 @@
         <div id="idPageInputs#id#-content">
             <!-- Global duet navigation buttons -->
             <div class="iotawatt-global-duet-nav#id#">
-                <button class="iotawatt-global-duet-btn#id# active" data-period="day">JOUR</button>
-                <button class="iotawatt-global-duet-btn#id#" data-period="month">MOIS</button>
-                <button class="iotawatt-global-duet-btn#id#" data-period="year">ANNÉE</button>
+                <button class="iotawatt-global-duet-btn#id# active" data-period="day">{{JOUR}}</button>
+                <button class="iotawatt-global-duet-btn#id#" data-period="month">{{MOIS}}</button>
+                <button class="iotawatt-global-duet-btn#id#" data-period="year">{{ANNÉE}}</button>
             </div>
             
             <div id="iotawatt-inputs-container#id#">
@@ -710,7 +710,7 @@
             },
             error: function(xhr, status, error) {
                 console.error('[IoTaWatt ' + eqId + '] AJAX error loading ' + period + ' data:', error);
-                numberSpan.innerHTML = 'Erreur <span class="unit' + eqId + '">kWh</span>';
+                numberSpan.innerHTML = '{{Erreur}} <span class="unit' + eqId + '">kWh</span>';
                 percentSpan.textContent = '---';
                 percentSpan.style.color = '#F44336';
             }

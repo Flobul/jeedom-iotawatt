@@ -429,7 +429,7 @@ class iotawatt extends eqLogic
             $deletelogCmd->setEqLogic_id($this->getId());
             $deletelogCmd->setType('action');
             $deletelogCmd->setSubType('select');
-            $deletelogCmd->setConfiguration('listValue', 'current|Temps réel;history|Historique;both|Les deux');
+            $deletelogCmd->setConfiguration('listValue', 'current|' . __('Temps réel', __FILE__) . ';history|' . __('Historique', __FILE__) . ';both|' . __('Les deux', __FILE__));
             $deletelogCmd->setConfiguration('updateCmdToValue', '#select#');
             $deletelogCmd->setConfiguration('actionConfirm', 1);
             $deletelogCmd->setDisplay('showOnPanel', 0);
