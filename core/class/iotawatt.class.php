@@ -32,7 +32,7 @@ class iotawatt extends eqLogic
      * Version du plugin.
      * @var string
      */
-    public static $_pluginVersion = '0.93';
+    public static $_pluginVersion = '0.94.0';
 
     public const HANDLESTATUS          = '/status';
     public const HANDLEVCAL            = '/vcal';
