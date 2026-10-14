@@ -14,6 +14,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global moment */
+
 /**
  * Gestionnaire de la modal de puissance IoTaWatt
  */

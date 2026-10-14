@@ -1935,7 +1935,7 @@ if ($currentTariffType === 'tempo') {
                         ?>
                     </span>
                 </div>
-                <button class="btn btn-xs btn-primary view-history" title="{{Voir l'historique}}">
+                <button class="btn btn-xs btn-primary view-history" data-title="{{Voir l'historique}}">
                     <i class="fas fa-chart-line"></i>
                 </button>
             </div>

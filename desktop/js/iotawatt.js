@@ -37,7 +37,8 @@ function printEqlogic() {
 }
 
 document.getElementById('table_cmd').addEventListener('click', function(event) {
-  if (_target = event.target.closest('.cmdAction[data-action="reloadHistory"]')) {
+  const target = event.target.closest('.cmdAction[data-action="reloadHistory"]');
+  if (target) {
     var id = event.target.closest('tr').getAttribute('data-cmd_id');
     var message = '{{Êtes-vous sûr de vouloir supprimer l\'historique de la commande et de le remplacer par celui de IoTaWatt ? Cette action est irréversible.}}</br></br>';
     const now = new Date();
@@ -71,28 +72,29 @@ document.getElementById('table_cmd').addEventListener('click', function(event) {
 	                callback: {click: function() {
                     const selectedBtn = document.querySelector('#md_history .btn-success.btnStartDate');
                     const val = selectedBtn?.dataset.value || selectedBtn?.value;
+                    var value;
                     switch (val) {
                         case '0':
-                            var value = 's';
+                            value = 's';
                             break;
                         case 'today':
-                            var value = 'd'
+                            value = 'd'
                             break;
                         case 'week':
-                            var value = 'w';
+                            value = 'w';
                             break;
                         case 'month':
-                            var value = 'M';
+                            value = 'M';
                             break;
                         case 'year':
-                            var value = 'y';
+                            value = 'y';
                             break;
                         case 'all':
                         case undefined:
-                            var value = 'y-4y';
+                            value = 'y-4y';
                             break;
                         default:
-                            var value = val.replace(" ", "T");
+                            value = val.replace(" ", "T");
                             break;
                     }
                     fetch('plugins/iotawatt/core/ajax/iotawatt.ajax.php', {
@@ -215,7 +217,7 @@ if (chartBtn) {
 
 function addCmdToTable(_cmd) {
    if (!isset(_cmd)) {
-     var _cmd = {configuration: {}};
+     _cmd = {configuration: {}};
    }
    if (!isset(_cmd.configuration)) {
      _cmd.configuration = {};

@@ -188,10 +188,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
               </div>
               <div class="form-group" id="idManualGroup">
                   <label class="col-sm-4 control-label help">{{Intervalle}}
-                      <sup><i class="fas fa-question-circle tooltips tippied" title="{{Intervalle entre chaque valeur.}}<br\>{{Attention : un trop petit intervalle pour une plage trop grande peut mettre du temps/de la ressource à être récupéré.}}<br\>{{10s : (10 secondes)}}<br\>{{5m : (cinq minutes)}}<br\>{{1h : (une heure)}}<br\>{{1M : (un mois)}}"></i></sup>
+                      <sup><i class="fas fa-question-circle tooltips tippied" data-title="{{Intervalle entre chaque valeur.}}<br\>{{Attention : un trop petit intervalle pour une plage trop grande peut mettre du temps/de la ressource à être récupéré.}}<br\>{{10s : (10 secondes)}}<br\>{{5m : (cinq minutes)}}<br\>{{1h : (une heure)}}<br\>{{1M : (un mois)}}"></i></sup>
                   </label>
                   <div class="col-sm-6" style="display:inline-flex">
-                      <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="manualGroup" data-l3key="value" title="{{Valeur}}" >
+                      <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="manualGroup" data-l3key="value" data-title="{{Valeur}}" >
                           <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
@@ -206,7 +206,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                           <option value="30">30</option>
                           <option value="50">50</option>
                       </select>
-                      <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="manualGroup" data-l3key="unit" title="{{Unité}}" >
+                      <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="manualGroup" data-l3key="unit" data-title="{{Unité}}" >
                           <option value="s">{{seconde(s)}}</option>
                           <option value="m">{{minute(s)}}</option>
                           <option value="h">{{heure(s)}}</option>

@@ -102,7 +102,7 @@ function renderConfigCell($data) {
     $html = '<td>';
     if (!empty($data['id'])) {
         $html .= sprintf(
-            '<a class="btn btn-default btn-xs tooltipstered eqLogicAction roundedLeft" data-id="%s" data-action="configureEqLogic" title="{{Configuration de l\'équipement}}"><i class="fas fa-cogs"></i></a>',
+            '<a class="btn btn-default btn-xs tooltipstered eqLogicAction roundedLeft" data-id="%s" data-action="configureEqLogic" data-title="{{Configuration de l\'équipement}}"><i class="fas fa-cogs"></i></a>',
             h($data['id'])
         );
         $html .= $data['eqLink'];
@@ -125,14 +125,14 @@ function renderNameCell($data) {
         
         if (!empty($data['powerId'])) {
             $html .= sprintf(
-                '<a class="btn btn-default btn-xs tooltipstered cmdAction roundedLeft" data-cmd_id="%s" data-action="configure" title="{{Configuration de la commande de puissance}}"><i class="icon kiko-lightning"></i></a>',
+                '<a class="btn btn-default btn-xs tooltipstered cmdAction roundedLeft" data-cmd_id="%s" data-action="configure" data-title="{{Configuration de la commande de puissance}}"><i class="icon kiko-lightning"></i></a>',
                 h($data['powerId'])
             );
         }
         
         if (!empty($data['consoId'])) {
             $html .= sprintf(
-                '<a class="btn btn-default btn-xs tooltipstered cmdAction roundedRight" data-cmd_id="%s" data-action="configure" title="{{Configuration de la commande de consommation}}"><i class="icon kiko-electricity"></i></a>',
+                '<a class="btn btn-default btn-xs tooltipstered cmdAction roundedRight" data-cmd_id="%s" data-action="configure" data-title="{{Configuration de la commande de consommation}}"><i class="icon kiko-electricity"></i></a>',
                 h($data['consoId'])
             );
         }
@@ -197,7 +197,7 @@ function renderPowerCell($data, $logos) {
             h($data['powerValueDate'])
         );
         $html .= sprintf(
-            '<div class="cmd label cursor history power" data-linky="%d" data-cmd_id="%s" title="%s">%s %s</div> ',
+            '<div class="cmd label cursor history power" data-linky="%d" data-cmd_id="%s" data-title="%s">%s %s</div> ',
             $isLinky,
             h($data['powerId']),
             $title,
@@ -275,6 +275,7 @@ function renderConsoTodayCell($data) {
         $html .= '<div class="cmd label consoTotPourcent" data-action="sum"></div>';
     } else {
         $stats = IotawattPowerData::calculateConsoStats($data);
+        $isLinky = !empty($data['isLinky']) ? 1 : 0;
         $valueInfoT = cmd::autoValueArray($stats['today'], 2, $data['consoOldUnit'] ?? 'Wh');
         $consoTodayVal = round($valueInfoT[0], 2);
         $consoPourcent = $stats['percentage'];
@@ -287,7 +288,6 @@ function renderConsoTodayCell($data) {
         
         // Formater le pourcentage avec signe
         $posConsoPourcent = ($consoPourcent > 0 ? '+' : '') . number_format($consoPourcent, 2, '.', '');
-        $isLinky = !empty($data['isLinky']) ? 1 : 0;
         
         $html .= sprintf(
             '<div class="cmd label label-info cursor history consoTotT" data-linky="%d" data-cmd_id="%s" data-kwh="%s">%s %s</div>',

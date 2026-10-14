@@ -14,6 +14,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global addCmdToTable, modifyWithoutSave */
+
 document.getElementById('bt_cmdCreateSave').addEventListener('click', function() {
     var series = document.getElementById('series_id').value;
     var voltpower = document.getElementById('voltPower').value;

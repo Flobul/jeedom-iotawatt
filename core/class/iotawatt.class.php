@@ -161,6 +161,7 @@ class iotawatt extends eqLogic
             }
             return $result;
         }
+        return false;
     }
 
     /**
@@ -393,7 +394,7 @@ class iotawatt extends eqLogic
     public function preUpdate()
     {
         $this->getSeries();
-        $this->updateStatus($this->getIotaWattStatus(array('passwords' => true, 'stats' => true, 'wifi' => true, 'inputs' => true, 'outputs' => true, 'device' => true, 'stats' => true)));
+        $this->updateStatus($this->getIotaWattStatus(array('passwords' => true, 'stats' => true, 'wifi' => true, 'inputs' => true, 'outputs' => true, 'device' => true)));
         $rebootCmd = $this->getCmd('action', 'reboot');
         if (!is_object($rebootCmd)) {
             $rebootCmd = new iotawattCmd();
@@ -487,7 +488,7 @@ class iotawatt extends eqLogic
      *                         'maxValue' => La valeur maximale autorisée pour cette unité de mesure.
      *                         'generic'  => Le nom générique de l'unité de mesure.
      */
-    public function getParamUnits($_unit, $_param) {
+    public static function getParamUnits($_unit, $_param) {
         $array = array(
             'Volts' => array(
                 'name' => __('Tension', __FILE__),
@@ -529,7 +530,7 @@ class iotawatt extends eqLogic
                 'unit' => '%',
                 'decimals' => 1,
                 'minValue' => 0,
-                'minValue' => 100
+                'maxValue' => 100
             ),
             'VAR' => array(
                 'name' => __('Puissance réactive', __FILE__),
@@ -577,6 +578,7 @@ class iotawatt extends eqLogic
     public function updateStatus($_status)
     {
         if (!is_array($_status))  return false;
+        $dataDate = date('Y-m-d H:i:s');
         if (isset($_status['device'])) {
             log::add(__CLASS__, 'debug', __FUNCTION__ . ' ' . __('début', __FILE__) . ' device=' . json_encode($_status['device']));
             $this->setConfiguration('name', $_status['device']['name']);
@@ -618,7 +620,6 @@ class iotawatt extends eqLogic
         }
         if (isset($_status['inputs'])) {
             log::add(__CLASS__, 'debug', __FUNCTION__ . ' ' . __('début', __FILE__) . ' time= ' . $dataDate . ' inputs=' . json_encode($_status['inputs']));
-            $dataDate = $dataDate ?? date('Y-m-d H:i:s');
             $series = $this->getSeries();
             $this->setConfiguration('nbInputs', count($_status['inputs']));
             for ($i = 0; $i < count($_status['inputs']); $i++) {
@@ -659,6 +660,7 @@ class iotawatt extends eqLogic
             }
         }
         //$this->save();
+        return true;
     }
 
     /**
@@ -858,7 +860,9 @@ class iotawatt extends eqLogic
             if (count($resultat) > 0) {
                 $this->setStatus('lastValueUpdate', $seriesValues['range'][1]);
             }
+            return $resultat;
         }
+        return false;
     }
 
     /**
@@ -896,7 +900,8 @@ class iotawatt extends eqLogic
             $http->setHeader($header);
 
         } catch (Exception $e) {
-            log::add(__CLASS__, 'debug', "L." . __LINE__ . " F." . __FUNCTION__ . __(" Erreur d'authentification : ", __FILE__) . $http);
+            log::add(__CLASS__, 'debug', "L." . __LINE__ . " F." . __FUNCTION__ . __(" Erreur d'authentification : ", __FILE__) . $e->getMessage());
+            return false;
         }
         try {
             $response = $http->exec($_timeout);
@@ -1597,6 +1602,7 @@ class iotawattCmd extends cmd
     {
         $eqLogic = $this->getEqLogic();
         log::add(__CLASS__, 'debug', __("Action sur ", __FILE__) . $this->getLogicalId() . __(" avec options ", __FILE__) . json_encode($_options));
+        $replace = array();
         switch ($this->getSubType()) {
             case 'slider':
                 $replace['#slider#'] = floatval($_options['slider']);
@@ -1631,7 +1637,7 @@ class iotawattCmd extends cmd
                 log::add(__CLASS__, 'debug', __FUNCTION__ . ' : ' . __('fin  (false)', __FILE__) . json_encode($reboot));
                 break;
             case 'deletelog':
-                if (!in_array(array('history','current','both'))) return false;
+                if (!in_array($value, array('history', 'current', 'both'), true)) return false;
                 $deletelog = $eqLogic->request(iotawatt::HANDLECOMMAND . '?deletelog=' . $value);
                 log::add(__CLASS__, 'debug', __FUNCTION__ . ' : ' . __('fin  (false)', __FILE__) . json_encode($deletelog));
                 break;

@@ -14,6 +14,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global flatpickr */
+
 (function() {
     'use strict';
     
@@ -255,40 +257,40 @@
                 }
             } else if (tariffType === 'tempo' || tariffType === 'hphc') {
                 // Afficher simple HC/HP (jour unicolore ou HP/HC)
-                var totalHC = parseFloat(dayData.hc) || 0;
-                var totalHP = parseFloat(dayData.hp) || 0;
-                var totalHCCost = parseFloat(dayData.cost_hc_ttc) || 0;
-                var totalHPCost = parseFloat(dayData.cost_hp_ttc) || 0;
+                var simpleTotalHC = parseFloat(dayData.hc) || 0;
+                var simpleTotalHP = parseFloat(dayData.hp) || 0;
+                var simpleTotalHCCost = parseFloat(dayData.cost_hc_ttc) || 0;
+                var simpleTotalHPCost = parseFloat(dayData.cost_hp_ttc) || 0;
                 var dayColor = dayData.day_color;
                 
                 if (tariffType === 'tempo' && dayColor) {
                     var colorEmoji = dayColor === 'bleu' ? '🔵' : (dayColor === 'blanc' ? '⚪' : '🔴');
-                    if (totalHC > 0) {
-                        var hcPercent = totalDayKwh > 0 ? ((totalHC / totalDayKwh) * 100).toFixed(1) : 0;
-                        tooltipLines.push('HC ' + colorEmoji + ' ' + totalHC.toFixed(2) + ' kWh (' + hcPercent + '%)');
+                    if (simpleTotalHC > 0) {
+                        var tempoHcPercent = totalDayKwh > 0 ? ((simpleTotalHC / totalDayKwh) * 100).toFixed(1) : 0;
+                        tooltipLines.push('HC ' + colorEmoji + ' ' + simpleTotalHC.toFixed(2) + ' kWh (' + tempoHcPercent + '%)');
                     }
-                    if (totalHP > 0) {
-                        var hpPercent = totalDayKwh > 0 ? ((totalHP / totalDayKwh) * 100).toFixed(1) : 0;
-                        tooltipLines.push('HP ' + colorEmoji + ' ' + totalHP.toFixed(2) + ' kWh (' + hpPercent + '%)');
+                    if (simpleTotalHP > 0) {
+                        var tempoHpPercent = totalDayKwh > 0 ? ((simpleTotalHP / totalDayKwh) * 100).toFixed(1) : 0;
+                        tooltipLines.push('HP ' + colorEmoji + ' ' + simpleTotalHP.toFixed(2) + ' kWh (' + tempoHpPercent + '%)');
                     }
                 } else {
                     // HP/HC sans couleur
-                    if (totalHC > 0) {
-                        var hcPercent = totalDayKwh > 0 ? ((totalHC / totalDayKwh) * 100).toFixed(1) : 0;
-                        tooltipLines.push('HC ' + totalHC.toFixed(2) + ' kWh (' + hcPercent + '%)');
+                    if (simpleTotalHC > 0) {
+                        var standardHcPercent = totalDayKwh > 0 ? ((simpleTotalHC / totalDayKwh) * 100).toFixed(1) : 0;
+                        tooltipLines.push('HC ' + simpleTotalHC.toFixed(2) + ' kWh (' + standardHcPercent + '%)');
                     }
-                    if (totalHP > 0) {
-                        var hpPercent = totalDayKwh > 0 ? ((totalHP / totalDayKwh) * 100).toFixed(1) : 0;
-                        tooltipLines.push('HP ' + totalHP.toFixed(2) + ' kWh (' + hpPercent + '%)');
+                    if (simpleTotalHP > 0) {
+                        var standardHpPercent = totalDayKwh > 0 ? ((simpleTotalHP / totalDayKwh) * 100).toFixed(1) : 0;
+                        tooltipLines.push('HP ' + simpleTotalHP.toFixed(2) + ' kWh (' + standardHpPercent + '%)');
                     }
                 }
                 
                 // Ajouter les totaux de coût HC/HP
-                if (totalHC > 0) {
-                    tooltipLines.push('{{Total HC}} : ' + totalHCCost.toFixed(2) + ' €');
+                if (simpleTotalHC > 0) {
+                    tooltipLines.push('{{Total HC}} : ' + simpleTotalHCCost.toFixed(2) + ' €');
                 }
-                if (totalHP > 0) {
-                    tooltipLines.push('{{Total HP}} : ' + totalHPCost.toFixed(2) + ' €');
+                if (simpleTotalHP > 0) {
+                    tooltipLines.push('{{Total HP}} : ' + simpleTotalHPCost.toFixed(2) + ' €');
                 }
             }
         }
@@ -561,10 +563,10 @@
                     if (aggregationMode === 'daily') {
                         tooltipLines.push('------------------');
                         
-                        var equipmentHCHP = window.equipmentDailyHCHP && window.equipmentDailyHCHP[dataset.label];
+                        var detailedEquipmentHCHP = window.equipmentDailyHCHP && window.equipmentDailyHCHP[dataset.label];
                         
                         // Vérifier s'il y a des périodes multiples (transition de couleur)
-                        var periods = (equipmentHCHP && equipmentHCHP[dayIndex]) ? (equipmentHCHP[dayIndex].periods || []) : [];
+                        var periods = (detailedEquipmentHCHP && detailedEquipmentHCHP[dayIndex]) ? (detailedEquipmentHCHP[dayIndex].periods || []) : [];
                         
                         // Regrouper les consommations HC/HP par couleur
                         var consumptionByColor = {};
@@ -770,14 +772,14 @@
                 // Pas de périodes : affichage simple (daily avec HC/HP ou monthly/yearly)
                 var hcPercent = parseFloat(dayData.hc_percent || 0);
                 var hpPercent = parseFloat(dayData.hp_percent || 0);
-                var hcCostTTC = parseFloat(dayData.cost_hc_ttc || 0);
-                var hpCostTTC = parseFloat(dayData.cost_hp_ttc || 0);
+                var summaryHcCostTTC = parseFloat(dayData.cost_hc_ttc || 0);
+                var summaryHpCostTTC = parseFloat(dayData.cost_hp_ttc || 0);
                 
                 var colorEmoji = dayColor === 'bleu' ? '🔵' : (dayColor === 'blanc' ? '⚪' : '🔴');
                 
                 if (totalHC > 0) {
                     dayTooltipLines.push('HC ' + colorEmoji + ' ' + totalHC.toFixed(2) + ' kWh (' + hcPercent + '%)');
-                    dayTooltipLines.push('  ' + hcCostTTC.toFixed(2) + ' €');
+                    dayTooltipLines.push('  ' + summaryHcCostTTC.toFixed(2) + ' €');
                 }
                 
                 if (totalHP > 0) {
@@ -786,13 +788,13 @@
                         ? ('HP ' + colorEmoji + ' ') 
                         : 'HP ';
                     dayTooltipLines.push(hpLabel + totalHP.toFixed(2) + ' kWh (' + hpPercent + '%)');
-                    dayTooltipLines.push('  ' + hpCostTTC.toFixed(2) + ' €');
+                    dayTooltipLines.push('  ' + summaryHpCostTTC.toFixed(2) + ' €');
                 }
             }
             
             var dayTooltip = dayTooltipLines.join('<br>');
             
-            var periodLabel = getPeriodDescription(label, aggregationMode);
+            var displayPeriodLabel = getPeriodDescription(label, aggregationMode);
             
             html += '<div class="chart-bar-container">' +
                     '<div class="chart-bar-stack">' + 
@@ -802,7 +804,7 @@
                     '</div>' +
                     segmentsHtml + 
                     '</div>' +
-                    '<div class="chart-bar-label">' + periodLabel + '</div>' +
+                    '<div class="chart-bar-label">' + displayPeriodLabel + '</div>' +
                     '</div>';
         });
         html += '</div>';
@@ -1308,12 +1310,12 @@
                         }
                     } else if (tariffType === 'hphc') {
                         if (hcKwh > 0) {
-                            var hcPercent = value > 0 ? ((hcKwh / value) * 100).toFixed(1) : 0;
-                            tooltipLines.push('HC ' + hcKwh.toFixed(2) + ' kWh (' + hcPercent + '%)');
+                            var hphcHcPercent = value > 0 ? ((hcKwh / value) * 100).toFixed(1) : 0;
+                            tooltipLines.push('HC ' + hcKwh.toFixed(2) + ' kWh (' + hphcHcPercent + '%)');
                         }
                         if (hpKwh > 0) {
-                            var hpPercent = value > 0 ? ((hpKwh / value) * 100).toFixed(1) : 0;
-                            tooltipLines.push('HP ' + hpKwh.toFixed(2) + ' kWh (' + hpPercent + '%)');
+                            var hphcHpPercent = value > 0 ? ((hpKwh / value) * 100).toFixed(1) : 0;
+                            tooltipLines.push('HP ' + hpKwh.toFixed(2) + ' kWh (' + hphcHpPercent + '%)');
                         }
                     }
                     }
@@ -1992,11 +1994,11 @@
         }
 
         // Lignes radiales
-        for (var i = 0; i < numPoints; i++) {
-            var angle = (i * 360 / numPoints) - 90;
-            var x = centerX + maxRadius * Math.cos(angle * Math.PI / 180);
-            var y = centerY + maxRadius * Math.sin(angle * Math.PI / 180);
-            svgContent += '<line x1="' + centerX + '" y1="' + centerY + '" x2="' + x + '" y2="' + y + '" stroke="#e0e0e0" stroke-width="1"/>';
+        for (var radialIndex = 0; radialIndex < numPoints; radialIndex++) {
+            var radialAngle = (radialIndex * 360 / numPoints) - 90;
+            var radialX = centerX + maxRadius * Math.cos(radialAngle * Math.PI / 180);
+            var radialY = centerY + maxRadius * Math.sin(radialAngle * Math.PI / 180);
+            svgContent += '<line x1="' + centerX + '" y1="' + centerY + '" x2="' + radialX + '" y2="' + radialY + '" stroke="#e0e0e0" stroke-width="1"/>';
         }
 
         // Données radar pour chaque équipement
@@ -2709,7 +2711,7 @@
             'area': '<i class="fas fa-chart-area"></i> {{Aires empilées}} - {{Évolution cumulée}}',
             'heatmap': '<i class="fas fa-th"></i> {{Carte thermique}} - {{Matrice de consommation}}'
         };
-        if (titles[selectedType]) {
+        if (titles[selectedType] && chartTitle) {
             chartTitle.innerHTML = titles[selectedType];
         }
     });
@@ -2763,7 +2765,10 @@
             'heatmap': '<i class="fas fa-th"></i> {{Carte thermique}} - {{Matrice de consommation}}'
         };
         if (titles[selectedType]) {
-            chartTitle.innerHTML = titles[selectedType];
+            var chartTitle = document.getElementById('chartTitle');
+            if (chartTitle) {
+                chartTitle.innerHTML = titles[selectedType];
+            }
         }
     });
 

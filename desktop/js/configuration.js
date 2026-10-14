@@ -14,6 +14,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global version */
+
 function addCondition(_expression, _idElementLinky) {
     jeedom.cmd.byHumanName({
         humanName: _expression,
@@ -348,8 +350,8 @@ function printPluginConfiguration() {
         
         if (target.id === 'clearAllHC' || target.closest('#clearAllHC')) {
             event.preventDefault();
-            var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            days.forEach(function(day) {
+            var clearDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            clearDays.forEach(function(day) {
                 var field = document.querySelector('.configKey[data-l1key="hc' + day + '"]');
                 if (field) {
                     field.value = '';
