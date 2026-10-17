@@ -11,7 +11,7 @@
 		"it_IT": "Plugin per recuperare informazioni da IoTaWatt. IoTaWatt è un progetto open-source e open hardware per produrre un monitor energetico accurato, economico e facile da usare. Può utilizzare decine di trasformatori di corrente comuni e riportare i dati localmente tramite il server web integrato o caricarli su uno dei numerosi siti web/basi di dati energetici di terze parti."
 	},
 	"utilization": "Après avoir entré l'email de connexion et le mot de passe dans la page de configuration, sélectionnez l'intervalle de rafraîchissement des informations. Lancez une synchronisation depuis la page des équipements.",
-	"licence": "AGPL",
+	"licence": "GPL-3.0",
 	"author": "DomoFlo1",
 	"require": "4.4",
 	"category": "energy",
