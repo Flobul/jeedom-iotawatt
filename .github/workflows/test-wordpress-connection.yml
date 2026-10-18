@@ -1,0 +1,41 @@
+name: Test WordPress connection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: wordpress-publication
+
+    env:
+      WP_ALLOWED_DOMAIN: ${{ vars.WP_ALLOWED_DOMAIN }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install \
+            -r requirements-changelog.txt
+
+      - name: Test WordPress REST API
+        env:
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: |
+          test -n "$WP_ALLOWED_DOMAIN"
+          test -n "$WP_USER"
+          test -n "$WP_APP_PASSWORD"
+
+          python scripts/changelog_wordpress.py \
+            connection-test \
+            --allowed-domain "$WP_ALLOWED_DOMAIN"

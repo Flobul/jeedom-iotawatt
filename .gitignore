@@ -6,6 +6,7 @@
 /.stylelintcache
 /.coverage
 /coverage.xml
+/.changelog-preview/
 /.github/ci/vendor/
 /.github/ci/node_modules/
 __pycache__/
