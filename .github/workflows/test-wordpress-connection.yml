@@ -27,11 +27,63 @@ jobs:
           python -m pip install \
             -r requirements-changelog.txt
 
-      - name: Test WordPress REST API
+      - name: Diagnose WordPress authentication
         env:
           WP_USER: ${{ secrets.WP_USER }}
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        shell: bash
         run: |
+          python - <<'PY'
+          import os
+          import json
+          import base64
+          import urllib.request
+          import urllib.error
+
+          host = "https://flobul-domotique.fr"
+          credentials = (
+              os.environ["WP_USER"] + ":" +
+              os.environ["WP_APP_PASSWORD"]
+          )
+          token = base64.b64encode(
+              credentials.encode()
+          ).decode()
+
+          endpoints = {
+              "API publique": "/wp-json/",
+              "Utilisateur connecté": "/wp-json/wp/v2/users/me?context=edit",
+              "Types éditables": "/wp-json/wp/v2/types?context=edit",
+          }
+
+          for name, path in endpoints.items():
+              req = urllib.request.Request(
+                  host + path,
+                  headers={
+                      "Authorization": "Basic " + token,
+                      "Accept": "application/json",
+                  },
+              )
+
+              try:
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      data = json.load(response)
+                      print(f"{name}: HTTP {response.status}")
+                      if name == "Utilisateur connecté":
+                          print("Compte WordPress reconnu")
+              except urllib.error.HTTPError as error:
+                  try:
+                      data = json.load(error)
+                      code = data.get("code", "unknown")
+                  except Exception:
+                      code = "non-JSON response"
+
+                  print(
+                      f"{name}: HTTP {error.code}, "
+                      f"WordPress code: {code}"
+                  )
+              except Exception as error:
+                  print(f"{name}: erreur réseau ({type(error).__name__})")
+          PY
           test -n "$WP_ALLOWED_DOMAIN"
           test -n "$WP_USER"
           test -n "$WP_APP_PASSWORD"
