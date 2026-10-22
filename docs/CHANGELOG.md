@@ -4,10 +4,6 @@
 
 - Aucun changement pour le moment.
 
-## Version 0.95.0 (31/10/2026)
-
-- Aucun changement pour le moment.
-
 ## Version 0.94.0 (14/10/2026)
 
 - Refonte de la structure du code afin d’améliorer sa lisibilité et sa maintenabilité

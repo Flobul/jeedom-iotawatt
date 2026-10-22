@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "plugin_id": "iotawatt",
+  "class_file": "core/class/iotawatt.class.php",
+  "reference_version": "0.94.0",
+  "reference_commit": "9a792687d9f23e9c1ea3119c9b272352cd60f365"
+}
