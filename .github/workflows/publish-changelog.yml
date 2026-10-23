@@ -15,8 +15,6 @@ on:
         description: Full commit SHA expected for the tag
         required: true
         type: string
-  release:
-    types: [published]
 
 permissions:
   contents: read
