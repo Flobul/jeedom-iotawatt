@@ -2,6 +2,8 @@
 
 ## Non publié
 
+
+- Ajout d’un accès Community avec aperçu et diagnostic facultatif limité à des compteurs non sensibles.
 - La publication automatique du changelog WordPress est désormais exclusivement gérée par l’automatisation centrale ; l’ancien workflow local reste disponible uniquement en simulation manuelle.
 
 ## Version 0.94.0 (14/10/2026)

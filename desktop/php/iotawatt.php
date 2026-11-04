@@ -32,6 +32,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
   <div class="eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
     <legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
     <div class="eqLogicThumbnailContainer">
+        <?php if (version_compare((string) jeedom::version(), '4.4.0', '>=')) { ?>
+            <div class="cursor eqLogicAction logoSecondary" data-action="createCommunityPost" data-plugin_id="iotawatt" role="button" tabindex="0" aria-label="{{Créer un sujet d'assistance sur Community Jeedom}}">
+                <i class="fas fa-comments"></i>
+                <br>
+                <span style="color:var(--txt-color)">{{Community}}</span>
+            </div>
+        <?php } ?>
 
         <?php
           iotawatt_display::displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="add"', 'logoPrimary');
@@ -279,6 +286,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
     </div>
   </div>
 </div>
+<?php include_file('desktop', 'community', 'js', 'iotawatt'); ?>
 
 <?php
 include_file('desktop', 'iotawatt', 'js', 'iotawatt');
