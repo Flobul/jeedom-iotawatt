@@ -22,31 +22,57 @@ require_once __DIR__ . "/../../../../core/php/core.inc.php";
 class iotawatt extends eqLogic
 {
 
-    /**
-     * Return privacy-safe aggregate diagnostics for a Community support post.
-     */
     public static function getConfigForCommunity($_separator = '<br>')
     {
-        $equipments = eqLogic::byType(__CLASS__);
-        $enabled = 0;
-        $commands = 0;
-
-        foreach ($equipments as $equipment) {
-            if ((int) $equipment->getIsEnable() === 1) {
-                $enabled++;
-            }
-            $equipmentCommands = $equipment->getCmd();
-            $commands += is_array($equipmentCommands) ? count($equipmentCommands) : 0;
+        if (!is_string($_separator) || !in_array($_separator, array('<br>', '<br/>', '<br />', "\n"), true)) {
+            $_separator = '<br>';
         }
-
-        $lines = array(
-            '<!-- JEEDOM_PLUGIN_DIAGNOSTICS_START -->',
-            __('Équipements configurés', __FILE__) . ' : ' . count($equipments),
-            __('Équipements actifs', __FILE__) . ' : ' . $enabled,
-            __('Commandes configurées', __FILE__) . ' : ' . $commands,
-            '<!-- JEEDOM_PLUGIN_DIAGNOSTICS_END -->'
-        );
-
+        $unknown = __('Inconnu', __FILE__);
+        $isTrue = static function ($value) { return in_array($value, array(true, 1, '1'), true); };
+        $isFalse = static function ($value) { return in_array($value, array(false, 0, '0'), true); };
+        $integer = static function ($value, $min, $max) {
+            if ((!is_int($value) && !is_string($value)) || preg_match('/^[0-9]{1,10}$/D', (string) $value) !== 1) {
+                return null;
+            }
+            $number = (int) $value;
+            return $number >= $min && $number <= $max ? $number : null;
+        };
+        $present = static function ($value) { return is_string($value) && trim($value) !== ''; };
+        $format = static function ($value, $kind, $args = array()) use ($unknown, $integer) {
+            switch ($kind) {
+                case 'number':
+                    $number = $integer($value, $args[0], $args[1]);
+                    return $number === null ? $unknown : (string) $number;
+            }
+            return $unknown;
+        };
+        $equipments = eqLogic::byType(__CLASS__);
+        $equipments = is_array($equipments) ? $equipments : array();
+        $lines = array('<!-- JEEDOM_PLUGIN_DIAGNOSTICS_START -->', __('Équipements configurés', __FILE__) . ' : ' . count($equipments));
+        $lines[] = __('Collecte du daemon (s)', __FILE__) . ' : ' . $format(config::byKey('deamonRefresh', __CLASS__, ''), 'number', array(1, 55));
+        $total = 0;
+        $invalid = 0;
+        foreach ($equipments as $equipment) {
+            $items = array($equipment);
+            foreach ($items as $item) {
+                $value = $item->getConfiguration('nbInputs', '');
+                $number = $integer($value, 0, 256);
+                if ($number === null) { $invalid++; } else { $total += $number; }
+            }
+        }
+        $lines[] = __('Entrées configurées', __FILE__) . ' : ' . ($invalid > 0 ? $unknown : (string) $total);
+        $total = 0;
+        $invalid = 0;
+        foreach ($equipments as $equipment) {
+            $items = array($equipment);
+            foreach ($items as $item) {
+                $value = $item->getConfiguration('nbOutputs', '');
+                $number = $integer($value, 0, 256);
+                if ($number === null) { $invalid++; } else { $total += $number; }
+            }
+        }
+        $lines[] = __('Sorties configurées', __FILE__) . ' : ' . ($invalid > 0 ? $unknown : (string) $total);
+        $lines[] = '<!-- JEEDOM_PLUGIN_DIAGNOSTICS_END -->';
         return implode($_separator, $lines) . $_separator;
     }
 
@@ -61,7 +87,7 @@ class iotawatt extends eqLogic
      * Version du plugin.
      * @var string
      */
-    public static $_pluginVersion = '0.94.0';
+    public static $_pluginVersion = '0.95.0';
 
     public const HANDLESTATUS          = '/status';
     public const HANDLEVCAL            = '/vcal';

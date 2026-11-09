@@ -31,14 +31,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 <div class="row row-overflow">
   <div class="eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
     <legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
-    <div class="eqLogicThumbnailContainer">
-        <?php if (version_compare((string) jeedom::version(), '4.4.0', '>=')) { ?>
-            <div class="cursor eqLogicAction logoSecondary" data-action="createCommunityPost" data-plugin_id="iotawatt" role="button" tabindex="0" aria-label="{{Créer un sujet d'assistance sur Community Jeedom}}">
-                <i class="fas fa-comments"></i>
-                <br>
-                <span style="color:var(--txt-color)">{{Community}}</span>
-            </div>
-        <?php } ?>
+    <div class="eqLogicThumbnailContainer iotawatt-management">
+            <div class="iotawatt-management-group iotawatt-management-actions">
 
         <?php
           iotawatt_display::displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="add"', 'logoPrimary');
@@ -49,6 +43,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
           iotawatt_display::displayActionCard('{{Documentation}}', 'fa-book-reader', 'id="bt_documentationiotawatt" data-location="' . $plugin->getDocumentation() . '"', 'logoSecondary');
         ?>
     </div>
+            <?php if (version_compare((string) jeedom::version(), '4.4.0', '>=')) { ?>
+            <div class="iotawatt-management-group iotawatt-management-community">
+                <div class="cursor eqLogicAction logoSecondary" data-action="createCommunityPost" data-plugin_id="iotawatt" role="button" tabindex="0" aria-label="{{Créer un sujet d'assistance sur Community Jeedom}}">
+                    <i class="fas fa-comments"></i><br>
+                    <span style="color:var(--txt-color)">{{Community}}</span>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
     <legend><i class="fas fa-sun"></i> {{Mes box IotaWatt}}</legend>
 		<?php
             if (count($eqLogics) == 0) {

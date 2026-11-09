@@ -1,10 +1,12 @@
 # Historique des versions — IoTaWatt
 
-## Non publié
+## Version 0.95.0 (08/11/2026)
+- Le brouillon Community inclut un diagnostic technique propre au plugin, agrégé et sans identifiants ni secrets, sans connexion aux appareils.
 
 
 - Ajout d’un accès Community avec aperçu et diagnostic facultatif limité à des compteurs non sensibles.
 - La publication automatique du changelog WordPress est désormais exclusivement gérée par l’automatisation centrale ; l’ancien workflow local reste disponible uniquement en simulation manuelle.
+- Le bouton Community est harmonisé et placé dans un bloc distinct à droite des actions de gestion, sur la même ligne lorsque la largeur le permet.
 
 ## Version 0.94.0 (14/10/2026)
 
