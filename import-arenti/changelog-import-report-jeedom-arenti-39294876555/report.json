@@ -1,0 +1,177 @@
+{
+  "schema_version": 2,
+  "plugin_folder": "jeedom-arenti",
+  "repository": "Flobul/jeedom-arenti",
+  "checkout_directory": "target",
+  "plugin_id": "arenti",
+  "plugin_version": "1.01.00",
+  "canonical_url": "https://flobul-domotique.fr/liste-des-versions-du-plugin-arenti-pour-jeedom/",
+  "source_kind": "raw-authenticated",
+  "raw_authenticated": true,
+  "wordpress_modified_gmt": "2026-10-13T16:37:58",
+  "wordpress_writes": 0,
+  "raw_sha256": "73535eb897e833dc5aa0e12632a53b302837a2880de25b100c4e41e189a4c2fa",
+  "markdown_sha256": "588b6a7732b710a1b0a8bc7a5c4365e41f5a1079314a9cc8e465f057a87c5613",
+  "backup_path": "/home/runner/work/_temp/wordpress-import-backup/jeedom-arenti/wordpress-73535eb897e8.txt",
+  "preview_path": "/home/runner/work/_temp/changelog-import-preview/CHANGELOG.md",
+  "source_format": "gutenberg",
+  "wordpress_versions": [
+    {
+      "version": "1.01.0",
+      "date": "12/10/2026"
+    },
+    {
+      "version": "1.00.01",
+      "date": "19/07/2026"
+    },
+    {
+      "version": "1.00.00",
+      "date": "24/06/2026"
+    },
+    {
+      "version": "0.90",
+      "date": "05/04/2025"
+    },
+    {
+      "version": "0.81",
+      "date": "01/02/2025"
+    },
+    {
+      "version": "0.80",
+      "date": "26/06/2024"
+    },
+    {
+      "version": "0.70",
+      "date": "22/06/2024"
+    },
+    {
+      "version": "0.50",
+      "date": "25/11/2023"
+    },
+    {
+      "version": "0.40",
+      "date": "02/10/2023"
+    },
+    {
+      "version": "0.30",
+      "date": "28/08/2023"
+    },
+    {
+      "version": "0.10",
+      "date": "11/06/2023"
+    }
+  ],
+  "local_versions": [],
+  "version_comparison": [
+    {
+      "version": "1.01.0",
+      "wordpress_date": "12/10/2026",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "1.00.01",
+      "wordpress_date": "19/07/2026",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "1.00.00",
+      "wordpress_date": "24/06/2026",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.90",
+      "wordpress_date": "05/04/2025",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.81",
+      "wordpress_date": "01/02/2025",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.80",
+      "wordpress_date": "26/06/2024",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.70",
+      "wordpress_date": "22/06/2024",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.50",
+      "wordpress_date": "25/11/2023",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.40",
+      "wordpress_date": "02/10/2023",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.30",
+      "wordpress_date": "28/08/2023",
+      "local_date": "",
+      "status": "wordpress-only"
+    },
+    {
+      "version": "0.10",
+      "wordpress_date": "11/06/2023",
+      "local_date": "",
+      "status": "wordpress-only"
+    }
+  ],
+  "plugin_version_match_count": 0,
+  "version_equivalence": {
+    "required": true,
+    "plugin_version": "1.01.00",
+    "wordpress_version": "",
+    "approved": false,
+    "approval_note": "",
+    "approval_fingerprint": ""
+  },
+  "warnings": [],
+  "potential_losses": [],
+  "removed_generated_content": [],
+  "preservation": {
+    "links": {
+      "source": 0,
+      "markdown": 0
+    },
+    "list_items": {
+      "source": 21,
+      "markdown": 21
+    },
+    "images": {
+      "source": 0,
+      "markdown": 0
+    },
+    "version_headings": {
+      "source": 11,
+      "markdown": 11
+    },
+    "source_text_characters": 1560,
+    "markdown_text_characters": 1579
+  },
+  "sensitive_content_detected": [],
+  "local_reconciliation": {
+    "target_existed": false,
+    "complete": true,
+    "missing_text": [],
+    "before_sha256": ""
+  },
+  "metadata_conflicts": [
+    "pluginVersion 1.01.00 apparaît 0 fois dans l'historique WordPress"
+  ],
+  "safe_to_apply": false,
+  "approval_token": "33798e824bd963ccf37ff18bf81a1c0838659b0ea614de7035ab269fb4f936c8"
+}

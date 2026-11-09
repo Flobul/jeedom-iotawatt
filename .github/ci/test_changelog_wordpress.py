@@ -89,6 +89,11 @@ class ChangelogParsingTests(RepositoryFixture):
         with self.assertRaisesRegex(c.ChangelogError, "pluginVersion"):
             c.get_release_entry(repository, "1.2.2")
 
+    def test_dated_release_cannot_contain_only_placeholder_text(self):
+        invalid = CHANGELOG.replace("- Correction visible.", "- Aucun changement pour le moment.")
+        with self.assertRaisesRegex(c.ChangelogError, "placeholder"):
+            c.parse_changelog(invalid)
+
     def test_prepare_requires_explicit_non_empty_notes(self):
         c.prepare_release(self.root, "1.3.0", "18/10/2026")
         updated = (self.root / "docs" / "CHANGELOG.md").read_text(encoding="utf-8")
@@ -120,7 +125,8 @@ class ConversionAndPreservationTests(unittest.TestCase):
         classic = c.render_entry("testplugin", self.entry, "html")
         blocks = c.render_entry("testplugin", self.entry, "gutenberg")
         self.assertIn("## Version 1.2.3", markdown)
-        self.assertIn('<h2 id="version-1.2.3">', classic)
+        self.assertIn("<h2>Version 1.2.3</h2>", classic)
+        self.assertNotIn("<section", classic)
         self.assertTrue(blocks.startswith("<!-- wp:html -->"))
         for value in (markdown, classic, blocks):
             self.assertEqual(value.count("jeedom-changelog:testplugin:1.2.3:start"), 1)
@@ -181,6 +187,79 @@ class SynchronizationTests(RepositoryFixture):
         self.assertEqual(summary["mode"], "dry-run")
         self.assertTrue(summary["history_preserved"])
 
+    def test_simulated_article_insertion_preserves_history_and_is_idempotent(self):
+        (self.root / "docs" / "CHANGELOG.md").write_text(
+            """# Historique des versions — IoTaWatt
+
+## Non publié
+
+- Aucun changement pour le moment.
+
+## Version 0.95.0 (18/10/2026)
+
+- Nouvelle amélioration...
+
+## Version 0.94.0 (14/10/2026)
+
+- Historique existant.
+""",
+            encoding="utf-8",
+        )
+        (self.root / "plugin_info" / "info.json").write_text(
+            json.dumps(
+                {
+                    "id": "iotawatt",
+                    "pluginVersion": "0.95.0",
+                    "changelog": "https://example.test/changelog/",
+                }
+            ),
+            encoding="utf-8",
+        )
+        original = "<h2>Version 0.94.0</h2>\n<p>Historique existant...</p>\n"
+        expected = (
+            "<!-- jeedom-changelog:iotawatt:0.95.0:start -->\n"
+            "<h2>Version 0.95.0</h2>\n"
+            "<ul>\n  <li>Nouvelle amélioration...</li>\n</ul>\n"
+            "<!-- jeedom-changelog:iotawatt:0.95.0:end -->\n\n"
+            + original
+        )
+
+        class SimulatedWordPressClient:
+            content = original
+            writes = 0
+
+            def __init__(self, canonical_url, allowed_domain, username, password):
+                self.post = make_post(type(self).content)
+
+            def find_post(self):
+                return self.post
+
+            def read_post(self, post):
+                return post
+
+            def update_content(self, post, content):
+                type(self).writes += 1
+                type(self).content = content
+                self.post = make_post(content, "2026-10-18T10:01:00")
+                return self.post
+
+        preview = self.root / "preview-integration"
+        with patch.object(c, "WordPressClient", SimulatedWordPressClient), patch.dict(
+            os.environ, {"WP_USER": "writer", "WP_APP_PASSWORD": "secret"}
+        ):
+            c.sync(self.root, "example.test", "0.95.0", True, preview)
+            c.sync(self.root, "example.test", "0.95.0", True, preview)
+
+        self.assertEqual(SimulatedWordPressClient.content, expected)
+        self.assertTrue(SimulatedWordPressClient.content.endswith(original))
+        self.assertEqual(SimulatedWordPressClient.writes, 1)
+        self.assertEqual(
+            SimulatedWordPressClient.content.count(
+                "<!-- jeedom-changelog:iotawatt:0.95.0:start -->"
+            ),
+            1,
+        )
+
     def test_publish_is_idempotent_after_first_write(self):
         preview = self.root / "preview"
         FakeClient.writes = 0
@@ -221,6 +300,37 @@ class SynchronizationTests(RepositoryFixture):
         response = c.ApiResponse({}, {}, "https://example.test", 200)
         with self.assertRaises(c.ChangelogError):
             client._post_from_response({"id": 42, "content": {}}, "posts", response)
+
+    def test_xmlrpc_differential_probe_detects_stripped_authorization_header(self):
+        class FakeWordPressMethods:
+            @staticmethod
+            def getUsersBlogs(username, password):
+                self.assertEqual((username, password), ("gitpub", "app-password"))
+                return [{"blogid": "1"}]
+
+        class FakeProxy:
+            wp = FakeWordPressMethods()
+
+        with patch.object(c.xmlrpc.client, "ServerProxy", return_value=FakeProxy()):
+            result = c.diagnose_rest_authentication(
+                "https://example.test", "gitpub", "app-password"
+            )
+        self.assertEqual(result, "authorization-header-stripped")
+
+    def test_xmlrpc_differential_probe_detects_rejected_credentials(self):
+        class RejectingWordPressMethods:
+            @staticmethod
+            def getUsersBlogs(username, password):
+                raise c.xmlrpc.client.Fault(403, "Incorrect username or password")
+
+        class RejectingProxy:
+            wp = RejectingWordPressMethods()
+
+        with patch.object(c.xmlrpc.client, "ServerProxy", return_value=RejectingProxy()):
+            result = c.diagnose_rest_authentication(
+                "https://example.test", "gitpub", "wrong"
+            )
+        self.assertEqual(result, "credentials-rejected")
 
     def test_update_sends_only_content_and_conditional_headers(self):
         client = object.__new__(c.WordPressClient)

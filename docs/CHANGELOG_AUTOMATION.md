@@ -119,6 +119,23 @@ Le workflow vérifie que le checkout correspond exactement au commit du tag, ex�
 
 Il ne crée jamais de tag, de numéro de version, de Release ou d’article WordPress.
 
+## Dépannage de l’authentification WordPress
+
+Une réponse `HTTP 401` avec le code `rest_not_logged_in` signifie que WordPress n’a reconnu aucune authentification REST. Vérifier dans cet ordre :
+
+1. `WP_USER` contient le **nom de connexion WordPress**, pas le nom affiché.
+2. `WP_APP_PASSWORD` contient le mot de passe d’application généré pour ce même compte, pas son mot de passe habituel. Les espaces d’affichage du mot de passe d’application sont acceptés par WordPress.
+3. Révoquer puis recréer le mot de passe d’application si sa copie est incertaine.
+4. Si les identifiants sont certains, vérifier que le serveur transmet l’en-tête `Authorization` à PHP. La documentation WordPress recommande pour Apache/CGI d’ajouter à la configuration du site ou au `.htaccess` :
+
+```apache
+<IfModule mod_setenvif>
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+</IfModule>
+```
+
+Pour Nginx/FastCGI, ajouter `fastcgi_pass_header Authorization;` dans la configuration FastCGI. Ne jamais contourner ce problème en plaçant les identifiants dans l’URL ou dans le dépôt.
+
 ## Reprise après incident
 
 La publication est idempotente : une entrée marquée ou détectée manuellement n’est pas ajoutée une seconde fois. En cas d’indisponibilité WordPress, de JSON inattendu, de format ambigu, de conflit ou d’échec de relecture, le processus échoue sans supprimer l’historique. Relancer le workflow après correction est sûr : le contrôle de présence empêche la duplication.

@@ -22,6 +22,7 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlparse, urlunparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+import xmlrpc.client
 
 import mistune
 
@@ -142,8 +143,20 @@ def parse_changelog(text: str) -> tuple[tuple[ReleaseEntry, ...], tuple[int, int
             raise ChangelogError(f"Invalid date for version {version}") from exc
         end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
         markdown = text[match.start():end].strip()
-        if not re.search(r"^[-*+]\s+\S", markdown, re.MULTILINE):
+        release_items = [
+            line.strip()
+            for line in markdown.splitlines()
+            if re.match(r"^[-*+]\s+\S", line)
+        ]
+        if not release_items:
             raise ChangelogError(f"Version {version} has no user-facing changelog item")
+        if all(
+            re.fullmatch(r"[-*+]\s+Aucun changement(?: pour le moment)?\.?", item, re.I)
+            for item in release_items
+        ):
+            raise ChangelogError(
+                f"Version {version} contains only a placeholder and is not a prepared release"
+            )
         entries.append(ReleaseEntry(version, match.group("date"), markdown))
 
     unreleased_end = headings[0].start()
@@ -212,14 +225,12 @@ def markdown_to_html(markdown: str) -> str:
     renderer = mistune.create_markdown(escape=True)
     rendered = renderer(markdown).strip()
     rendered = re.sub(
-        r"<h2>Version ([0-9.]+) \(([^<]+)\)</h2>",
-        lambda match: (
-            f'<h2 id="version-{html.escape(match.group(1), quote=True)}">'
-            f"Version {html.escape(match.group(1))} ({html.escape(match.group(2))})</h2>"
-        ),
+        r"<h2>Version ([0-9.]+) \([^<]+\)</h2>",
+        lambda match: f"<h2>Version {html.escape(match.group(1))}</h2>",
         rendered,
         count=1,
     )
+    rendered = re.sub(r"(?m)^<li>", "  <li>", rendered)
     return rendered
 
 
@@ -265,12 +276,7 @@ def render_entry(plugin_id: str, entry: ReleaseEntry, target_format: str) -> str
         body = entry.markdown
         return f"{start}\n{body}\n{end}"
     body = markdown_to_html(entry.markdown)
-    fragment = (
-        f'{start}\n<section class="jeedom-changelog-entry" '
-        f'data-plugin="{html.escape(plugin_id, quote=True)}" '
-        f'data-version="{html.escape(entry.version, quote=True)}">\n'
-        f"{body}\n</section>\n{end}"
-    )
+    fragment = f"{start}\n{body}\n{end}"
     if target_format == "gutenberg":
         return f"<!-- wp:html -->\n{fragment}\n<!-- /wp:html -->"
     if target_format == "html":
@@ -489,11 +495,49 @@ def credentials_from_environment() -> tuple[str, str]:
     return username, password
 
 
+def diagnose_rest_authentication(base_url: str, username: str, password: str) -> str:
+    """Differentiate invalid credentials from a stripped REST Authorization header.
+
+    WordPress XML-RPC accepts application passwords in the encrypted XML request
+    body rather than the HTTP Authorization header. A successful XML-RPC login
+    therefore proves that the credentials are valid even when REST authentication
+    is removed by Apache, LiteSpeed, a proxy or a security layer.
+    """
+    endpoint = base_url.rstrip("/") + "/xmlrpc.php"
+    try:
+        proxy = xmlrpc.client.ServerProxy(endpoint, allow_none=False)
+        blogs = proxy.wp.getUsersBlogs(username, password)
+    except xmlrpc.client.Fault:
+        return "credentials-rejected"
+    except (xmlrpc.client.ProtocolError, OSError) as exc:
+        raise ChangelogError(
+            "REST authentication failed and the XML-RPC differential probe was unavailable"
+        ) from exc
+    if not isinstance(blogs, (list, tuple)):
+        raise ChangelogError("WordPress XML-RPC returned an ambiguous authentication response")
+    return "authorization-header-stripped"
+
+
 def connection_test(root: Path, allowed_domain: str) -> None:
     repository = load_repository(root)
     username, password = credentials_from_environment()
     client = WordPressClient(repository.changelog_url, allowed_domain, username, password)
-    post = client.find_post()
+    try:
+        post = client.find_post()
+    except ChangelogError as exc:
+        if "HTTP 401" not in str(exc):
+            raise
+        diagnosis = diagnose_rest_authentication(client.base_url, username, password)
+        if diagnosis == "authorization-header-stripped":
+            raise ChangelogError(
+                "WordPress accepted the application password through XML-RPC but REST still returned HTTP 401; "
+                "the HTTP Authorization header is being stripped before WordPress REST authentication"
+            ) from exc
+        raise ChangelogError(
+            "WordPress rejected the application password through both REST and XML-RPC; "
+            "verify the exact login name, regenerate the application password, and confirm that "
+            "application passwords are enabled for this user"
+        ) from exc
     content_format = detect_wordpress_format(post.content_raw)
     print(
         "Read-only connection OK: "
